@@ -1,164 +1,123 @@
+<!-- Save as templates/appointment.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Medical Form with Speech Input</title>
+  <title>Voice Appointment Bot</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-    }
-
-    .left-side {
-      flex: 1;
-      background: url('photo.jpg') center center / cover no-repeat;
-    }
-
-    .right-side {
-      flex: 1;
+      background: #f0f4f8;
       padding: 2rem;
-      background-color: #f5f9fc;
-      overflow-y: auto;
-    }
-
-    h2 {
-      text-align: center;
-      color: #2c3e50;
-    }
-
-    form {
-      max-width: 500px;
-      margin: auto;
-    }
-
-    label {
-      display: block;
-      margin-top: 1rem;
-      margin-bottom: 0.25rem;
-      font-weight: bold;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 0.5rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      background-color: #1abc9c;
-      border: none;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .mic-btn {
-      margin-left: 0.5rem;
-      cursor: pointer;
-      background-color: #3498db;
-      border: none;
-      color: white;
-      padding: 0.3rem 0.6rem;
-      border-radius: 50%;
-    }
-
-    .field-group {
       display: flex;
+      flex-direction: column;
       align-items: center;
     }
-
-    .field-group input,
-    .field-group textarea {
-      flex: 1;
+    #messages {
+      width: 90%;
+      max-width: 600px;
+      border: 1px solid #ccc;
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      min-height: 200px;
     }
-
+    .info-box {
+      width: 90%;
+      max-width: 600px;
+      background: #e0f7fa;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+  <h1>🎤 Voice Appointment Bot</h1>
 
-  <!-- Left Container (Image) -->
-  <div class="left-side"></div>
-
-  <!-- Right Container (Form) -->
-  <div class="right-side">
-    <h2>Book a Medical Appointment</h2>
-    <form id="medicalForm">
-      <!-- Name -->
-      <label for="name">Name:</label>
-      <div class="field-group">
-        <input type="text" id="name" name="name" required>
-        <button type="button" class="mic-btn" onclick="startDictation('name')">🎤</button>
-      </div>
-
-      <!-- Age -->
-      <label for="age">Age:</label>
-      <div class="field-group">
-        <input type="number" id="age" name="age" required>
-        <button type="button" class="mic-btn" onclick="startDictation('age')">🎤</button>
-      </div>
-
-      <!-- Gender -->
-      <label for="gender">Gender:</label>
-      <select id="gender" name="gender">
-        <option value="">--Select--</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Other">Other</option>
-      </select>
-
-      <!-- Medical Problem -->
-      <label for="problem">Medical Problem:</label>
-      <div class="field-group">
-        <textarea id="problem" name="problem" rows="3"></textarea>
-        <button type="button" class="mic-btn" onclick="startDictation('problem')">🎤</button>
-      </div>
-
-      <!-- Notes -->
-      <label for="notes">Additional Notes:</label>
-      <div class="field-group">
-        <textarea id="notes" name="notes" rows="3"></textarea>
-        <button type="button" class="mic-btn" onclick="startDictation('notes')">🎤</button>
-      </div>
-
-      <button type="submit">Submit</button>
-    </form>
+  <div class="info-box" id="user-data">
+    <strong>Collected Data:</strong><br>
+    Name: <span id="name"></span><br>
+    Age: <span id="age"></span><br>
+    Gender: <span id="gender"></span><br>
+    Phone: <span id="phone"></span><br>
+    Problem: <span id="problem"></span>
   </div>
 
+  <div id="messages">Click "Start Talking" to begin.</div>
+  <button onclick="startTalking()">Start Talking</button>
+
   <script>
-    function startDictation(fieldId) {
-      if (!('webkitSpeechRecognition' in window)) {
-        alert("Sorry, your browser doesn't support speech recognition.");
-        return;
-      }
+    const messagesDiv = document.getElementById("messages");
+    let session = {};
+    const synth = window.speechSynthesis;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.continuous = false;
 
-      const recognition = new webkitSpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onresult = function(event) {
-        document.getElementById(fieldId).value = event.results[0][0].transcript;
+    function speak(text, callback = null) {
+      const utter = new SpeechSynthesisUtterance(text);
+      synth.speak(utter);
+      utter.onend = () => {
+        if (callback) callback();
       };
+    }
 
-      recognition.onerror = function(event) {
-        alert('Speech recognition error: ' + event.error);
-      };
+    function appendMessage(text, from = "bot") {
+      const p = document.createElement("p");
+      p.innerText = (from === "bot" ? "🤖 " : "🧑 ") + text;
+      messagesDiv.appendChild(p);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
 
+    function updateDataBox(session) {
+      document.getElementById("name").textContent = session.name || "";
+      document.getElementById("age").textContent = session.age || "";
+      document.getElementById("gender").textContent = session.gender || "";
+      document.getElementById("phone").textContent = session.phone || "";
+      document.getElementById("problem").textContent = session.problem || "";
+    }
+
+    function startTalking() {
       recognition.start();
     }
 
-    // Optional: Handle form submission
-    document.getElementById('medicalForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert("Form submitted! (You can add backend integration here.)");
-    });
-  </script>
+    recognition.onresult = function (event) {
+      const userInput = event.results[0][0].transcript;
+      appendMessage(userInput, "user");
 
+      fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userInput, session: session })
+      })
+      .then(res => res.json())
+      .then(data => {
+        appendMessage(data.message, "bot");
+        session = data.session || {};
+        updateDataBox(session);
+        speak(data.message, () => {
+          if (!data.done) recognition.start();
+        });
+      });
+    };
+
+    recognition.onerror = function (e) {
+      console.error("Speech error:", e);
+      speak("Sorry, I didn't catch that. Please try again.", () => recognition.start());
+    };
+
+    // First message and voice input
+    setTimeout(() => {
+      speak("Hello! What is your name?", () => recognition.start());
+    }, 500);
+  </script>
 </body>
 </html>
