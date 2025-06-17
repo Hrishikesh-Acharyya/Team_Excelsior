@@ -1,0 +1,17 @@
+# ▶️ Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.log
+
+# ▶️ Django
+*.sqlite3
+*.db
+
+# ▶️ Environment / Secrets
+.env
+
+# ▶️ IDE / Editor Settings
+.vscode/
