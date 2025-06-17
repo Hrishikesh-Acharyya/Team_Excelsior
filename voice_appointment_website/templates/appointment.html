@@ -1,0 +1,123 @@
+<!-- Save as templates/appointment.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Voice Appointment Bot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #messages {
+      width: 90%;
+      max-width: 600px;
+      border: 1px solid #ccc;
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      min-height: 200px;
+    }
+    .info-box {
+      width: 90%;
+      max-width: 600px;
+      background: #e0f7fa;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎤 Voice Appointment Bot</h1>
+
+  <div class="info-box" id="user-data">
+    <strong>Collected Data:</strong><br>
+    Name: <span id="name"></span><br>
+    Age: <span id="age"></span><br>
+    Gender: <span id="gender"></span><br>
+    Phone: <span id="phone"></span><br>
+    Problem: <span id="problem"></span>
+  </div>
+
+  <div id="messages">Click "Start Talking" to begin.</div>
+  <button onclick="startTalking()">Start Talking</button>
+
+  <script>
+    const messagesDiv = document.getElementById("messages");
+    let session = {};
+    const synth = window.speechSynthesis;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    function speak(text, callback = null) {
+      const utter = new SpeechSynthesisUtterance(text);
+      synth.speak(utter);
+      utter.onend = () => {
+        if (callback) callback();
+      };
+    }
+
+    function appendMessage(text, from = "bot") {
+      const p = document.createElement("p");
+      p.innerText = (from === "bot" ? "🤖 " : "🧑 ") + text;
+      messagesDiv.appendChild(p);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function updateDataBox(session) {
+      document.getElementById("name").textContent = session.name || "";
+      document.getElementById("age").textContent = session.age || "";
+      document.getElementById("gender").textContent = session.gender || "";
+      document.getElementById("phone").textContent = session.phone || "";
+      document.getElementById("problem").textContent = session.problem || "";
+    }
+
+    function startTalking() {
+      recognition.start();
+    }
+
+    recognition.onresult = function (event) {
+      const userInput = event.results[0][0].transcript;
+      appendMessage(userInput, "user");
+
+      fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userInput, session: session })
+      })
+      .then(res => res.json())
+      .then(data => {
+        appendMessage(data.message, "bot");
+        session = data.session || {};
+        updateDataBox(session);
+        speak(data.message, () => {
+          if (!data.done) recognition.start();
+        });
+      });
+    };
+
+    recognition.onerror = function (e) {
+      console.error("Speech error:", e);
+      speak("Sorry, I didn't catch that. Please try again.", () => recognition.start());
+    };
+
+    // First message and voice input
+    setTimeout(() => {
+      speak("Hello! What is your name?", () => recognition.start());
+    }, 500);
+  </script>
+</body>
+</html>
