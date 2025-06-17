@@ -22,4 +22,4 @@ requests
 psycopg2-binary
 
 #  Cross-Origin Support (if needed for frontend)
-django-cors-headers
+django-cors-headersadd 
