@@ -75,7 +75,7 @@ async function Toggle() {
     };
 
     mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' }); //blob is binary large object, used to store audio data
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); //blob is binary large object, used to store audio data
         console.log("Recording stopped, processing audio...");
         sendAudioToBackend(audioBlob); //send the audio blob to the backend for processing
  
@@ -87,7 +87,7 @@ async function Toggle() {
         toggleMicButton.textContent = "Start Talking";
         mediaRecorder.stop();
 
-    }, 5000); // Record for 5 seconds, adjust as needed
+    }, 30000); // Record for 30 seconds, adjust as needed
 }
 };
 
