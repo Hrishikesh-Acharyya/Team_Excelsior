@@ -122,7 +122,7 @@ class StructureDataAPIView(APIView):
         - "gender": Gender of the patient (if mentioned, otherwise null),
         - "symptoms": Any symptoms the user has like(fever, cough, etc.), how long he has been suffering, any medical concerns etc (if mentioned, otherwise null),
         - "phone": Phone number of the patient (if mentioned, otherwise null),
-        - "email": Email address of the patient (if mentioned, otherwise null), infer the email from the context the name of user. Usually emails are name/surname@domain.com. Infer the domain properly. Consider only well known domains like gmail.com, yahoo.com, outlook.com etc. If not mentioned, set it to null.
+        - "email": Email address of the patient (if mentioned, otherwise null), infer the email from the context. Usually emails are name/surname@domain.com. Infer the domain properly. Consider only well known domains like gmail.com, yahoo.com, outlook.com etc. If not mentioned, set it to null.
         - "doctor": Name  of the doctor (if mentioned, otherwise null),
         - "specialization": Specialization of the doctor (if mentioned, otherwise null),
         - "datetime": Appointment date and time in ISO 8601 format (e.g., "2025-06-18T14:00:00"). If they say X days from now, calculate the date and time accordingly. If not mentioned, set it to null.

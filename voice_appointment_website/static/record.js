@@ -5,6 +5,13 @@
  */
 const defaultRecordingTime = 2*60*1000
 const toggleMicButton = document.getElementById('toggle-mic-button');
+const nameField = document.getElementById('name');
+const ageField = document.getElementById('age');
+const genderField = document.getElementById('gender');
+const phoneField = document.getElementById('phone');
+const symptomsField = document.getElementById('symptoms');
+const emailField = document.getElementById('email');
+
 let mediaRecorder;
 let audioChunks = [];
 let is_recording = false;
@@ -175,7 +182,19 @@ async function structureData(data) {
 
         const structuredData = await structuredResponse.json();
         console.log('Structured Data:', structuredData);
+
+        displayStructuredData(structuredData);
     } catch (error) {
         console.error('Error sending structured data:', error);
     }
+}
+
+function displayStructuredData(structuredData) {
+
+    nameField.textContent = structuredData.name || nameField.textContent || '';
+    ageField.textContent = structuredData.age || ageField.textContent || '';
+    genderField.textContent = structuredData.gender || genderField.textContent || '';
+    phoneField.textContent = structuredData.phone || phoneField.textContent || '';
+    symptomsField.textContent = structuredData.symptoms || symptomsField.textContent || '';
+    emailField.textContent = structuredData.email || emailField.textContent || '';
 }
