@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.conf import settings
 
 
 def index(request):
@@ -11,5 +12,5 @@ def book_appointment(request):
     """
     Render the appointment booking page.
     """
-    return render(request, 'appointment.html')
+    return render(request, 'appointment.html', {'HOST_NAME': settings.HOST_NAME})
 # Create your views here.

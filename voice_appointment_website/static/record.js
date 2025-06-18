@@ -77,6 +77,7 @@ async function Toggle() {
     mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' }); //blob is binary large object, used to store audio data
         console.log("Recording stopped, processing audio...");
+        sendAudioToBackend(audioBlob); //send the audio blob to the backend for processing
  
      };
 
@@ -105,19 +106,22 @@ async function sendAudioToBackend(audioBlob)
 {
     const audioFile = new File([audioBlob], 'recording.wav', { type: 'audio/wav' });
     const formData = new FormData();
-    formData.append('audio', audioFile);
+    formData.append('audio', audioFile); //Name of the field in the form data is 'audio'
 
     try {
-        const response = await fetch('voice_data_extraction/transcribe/', {
+        const response = await fetch(`${HOST_NAME}/voice_data_extraction/transcribe/`, {
             method: 'POST',
             body: formData,
         });
-
+        console.log("data recieved")
         const data = await response.json();
-
-
-//TODO: create transcription property in returned data to access here 
-        alert('Transcription: ' + data.transcription);
+        console.log(JSON.stringify(data.transcription));
+        if (data.transcription) {
+            
+            alert('Transcription: ' + data.transcription);
+        } else {
+            alert('No transcription available.');
+        }
     } catch (error) {
         console.error('Error sending audio to backend:', error);
     }

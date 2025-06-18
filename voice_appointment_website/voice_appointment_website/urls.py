@@ -20,4 +20,5 @@ from django.urls import path,include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('appointment_booking.urls')),
+    path('voice_data_extraction/', include('voice_data_extraction.urls')),
 ]
