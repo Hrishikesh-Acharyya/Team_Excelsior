@@ -51,73 +51,7 @@
   </div>
 
   <div id="messages">Click "Start Talking" to begin.</div>
-  <button onclick="startTalking()">Start Talking</button>
+  <button onclick>Start Talking</button>
 
-  <script>
-    const messagesDiv = document.getElementById("messages");
-    let session = {};
-    const synth = window.speechSynthesis;
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.continuous = false;
-
-    function speak(text, callback = null) {
-      const utter = new SpeechSynthesisUtterance(text);
-      synth.speak(utter);
-      utter.onend = () => {
-        if (callback) callback();
-      };
-    }
-
-    function appendMessage(text, from = "bot") {
-      const p = document.createElement("p");
-      p.innerText = (from === "bot" ? "🤖 " : "🧑 ") + text;
-      messagesDiv.appendChild(p);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function updateDataBox(session) {
-      document.getElementById("name").textContent = session.name || "";
-      document.getElementById("age").textContent = session.age || "";
-      document.getElementById("gender").textContent = session.gender || "";
-      document.getElementById("phone").textContent = session.phone || "";
-      document.getElementById("problem").textContent = session.problem || "";
-    }
-
-    function startTalking() {
-      recognition.start();
-    }
-
-    recognition.onresult = function (event) {
-      const userInput = event.results[0][0].transcript;
-      appendMessage(userInput, "user");
-
-      fetch("/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userInput, session: session })
-      })
-      .then(res => res.json())
-      .then(data => {
-        appendMessage(data.message, "bot");
-        session = data.session || {};
-        updateDataBox(session);
-        speak(data.message, () => {
-          if (!data.done) recognition.start();
-        });
-      });
-    };
-
-    recognition.onerror = function (e) {
-      console.error("Speech error:", e);
-      speak("Sorry, I didn't catch that. Please try again.", () => recognition.start());
-    };
-
-    // First message and voice input
-    setTimeout(() => {
-      speak("Hello! What is your name?", () => recognition.start());
-    }, 500);
-  </script>
 </body>
 </html>

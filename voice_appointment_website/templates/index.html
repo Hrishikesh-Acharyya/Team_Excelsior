@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Medical Appointment System</title>
-  <link rel="stylesheet" href = "{% static 'styles.css' %}" />
+  <link rel="stylesheet" href = "{% static 'index.css' %}" />
 </head>
 <body>
 
@@ -41,7 +41,7 @@
   <section class="workflow" id="about">
     <h2>How It Works</h2>
     <div class="flex-tray">
-      <a href="appointment.html" class="step step-appointment">
+      <a href="{% url 'book_appointment'%}" class="step step-appointment">
         <div class="overlay">
           <h3>Book Appointment</h3>
           <div class="hidden-details">
