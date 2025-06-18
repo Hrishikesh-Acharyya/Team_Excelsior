@@ -7,6 +7,11 @@ import whisper
 import tempfile
 import subprocess
 import os
+import json
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 """
     View to handle audio transcription requests.
     In Django REST Framework (DRF), parser classes are responsible for parsing the content of incoming HTTP requests into Python data types that your views can work with.
@@ -64,7 +69,8 @@ class AudioTranscriptionAPIView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
+        #TODO: Handle cleanup of temporary files in case of errors or crashes. Implement it
         finally:
             # Clean up the temporary file
             
@@ -72,4 +78,76 @@ class AudioTranscriptionAPIView(APIView):
                 os.remove(temp_audio_input_path)
             if os.path.exists(temp_output_audio_path):
                 os.remove(temp_output_audio_path)
+
+
+class StructureDataAPIView(APIView):
+    """
+    View to send the transcribed data to the llama api for structuring the data.
+    """
+    def post(self, request, *args, **kwargs):
+        transcription = request.data.get('transcription')
+        if not transcription:
+            return Response({"error": "No transcription provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        structured_data = self.call_llm(transcription)
+        if isinstance(structured_data, Response): # if the call_llm function returns a Response object which it does in case of error , return it directly
+            return structured_data
+        return Response(structured_data, status=status.HTTP_200_OK)
     
+    def call_llm(self, transcription):
+        """
+        Call the Together.ai Llama API to structure the data.
+        """
+        api_key = os.getenv("TOGETHER_AI_API_KEY")
+        endpoint = os.getenv("TOGETHER_AI_API_URL")
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+
+        prompt = f"""
+        You are an intelligent assistant at a well known hospital that extracts structured data from voice-to-text medical appointment requests.
+        Be smart. Since the transcription is from a voice message, it may contain incomplete or unclear information. If you can smartly infer the missing information, do so.
+        If you cannot infer the missing information, set it to null.
+        ⚠️ If the user spells out their name or email using letters (e.g., H-A-R-R-Y), always prefer the spelled version over any earlier guess. Remove the hyphens and spaces from the spelled version to get the final name or email.
+
+        Given the following user message:
+        \"\"\"{transcription}\"\"\"
+
+        Extract the relevant information and return ONLY valid JSON with the following keys:
+        - "intent": One of ["book", "reschedule", "cancel"].
+        - "name": Full name of the patient. The patient may spell it out (if mentioned, otherwise null),
+        - "age": Age of the patient (if mentioned, otherwise null),
+        - "gender": Gender of the patient (if mentioned, otherwise null),
+        - "symptoms": Any symptoms the user has like(fever, cough, etc.), how long he has been suffering, any medical concerns etc (if mentioned, otherwise null),
+        - "phone": Phone number of the patient (if mentioned, otherwise null),
+        - "email": Email address of the patient (if mentioned, otherwise null), infer the email from the context the name of user. Usually emails are name/surname@domain.com. Infer the domain properly. Consider only well known domains like gmail.com, yahoo.com, outlook.com etc. If not mentioned, set it to null.
+        - "doctor": Name  of the doctor (if mentioned, otherwise null),
+        - "specialization": Specialization of the doctor (if mentioned, otherwise null),
+        - "datetime": Appointment date and time in ISO 8601 format (e.g., "2025-06-18T14:00:00"). If they say X days from now, calculate the date and time accordingly. If not mentioned, set it to null.
+        
+
+        Do not include any explanation or commentary. Only respond with the JSON object.
+
+        If a field is missing or unclear, set its value to null.
+        """
+
+        body = {
+            "model": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",  # Specify the model you want to use
+            "messages":[
+                {"role": "system", "content": "You are an intelligent assistant at a well known hospital that extracts structured data from voice-to-text natural language medical appointment requests."},
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.4  # Adjust as needed
+        }
+
+        try: 
+            response = requests.post(endpoint, headers=headers, data=json.dumps(body))
+            response.raise_for_status()
+
+            content = response.json()['choices'][0]['message']['content']
+            return json.loads(content)
+        except requests.exceptions.RequestException as e:
+            print(f"Error calling Together.ai API: {e}")
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

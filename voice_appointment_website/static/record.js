@@ -3,7 +3,7 @@
  * It allows users to start and stop audio recording, and processes the recorded audio.
  * It uses the MediaRecorder API to capture audio from the user's microphone.
  */
-
+const defaultRecordingTime = 2*60*1000
 const toggleMicButton = document.getElementById('toggle-mic-button');
 let mediaRecorder;
 let audioChunks = [];
@@ -87,7 +87,7 @@ async function Toggle() {
         toggleMicButton.textContent = "Start Talking";
         mediaRecorder.stop();
 
-    }, 30000); // Record for 30 seconds, adjust as needed
+    }, defaultRecordingTime); // Record for 30 seconds, adjust as needed
 }
 };
 
@@ -117,13 +117,65 @@ async function sendAudioToBackend(audioBlob)
         const data = await response.json();
         console.log(JSON.stringify(data.transcription));
         if (data.transcription) {
-            
-            alert('Transcription: ' + data.transcription);
+            showTranscription(data,false);
+           // alert('Transcription: ' + data.transcription);
         } else {
-            alert('No transcription available.');
+            // Handle empty transcription
+            showTranscription(data,true);
         }
     } catch (error) {
         console.error('Error sending audio to backend:', error);
     }
 }
 
+/**
+ * Displays the transcription result in the UI.
+ * @param {Object} data - The response data from the backend.
+ * @param {boolean} is_empty - Indicates if the transcription is empty.
+ */
+
+function showTranscription(data,is_empty) {
+    const transcriptionContainer = document.getElementById('transcription');
+
+    if( is_empty) {
+        transcriptionContainer.innerHTML =
+            `<p id = "prev-transcript"> Transcription: Sorry!! Did not quite get that</p>
+             <p> Press the button to record again</p>`;
+    } else {
+        transcriptionContainer.innerHTML =
+            `<p id = "prev-transcript"> Transcription: ${data.transcription}</p>
+             <p> Press the button to record again</p>`;
+              structureData(data)
+    }
+
+   
+
+}
+/**
+ * Takes the whisperAI response and sends it to backend for further processing.
+ * This function is called after the audio has been transcribed and the transcription is available.
+ * @param {Object} data  - The response data from the backend containing the transcription.
+ */
+async function structureData(data) {
+
+    try {
+        const structuredResponse = await fetch(`${HOST_NAME}/voice_data_extraction/structure_data/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!structuredResponse.ok) {
+            throw new Error('Failed to send structured data');
+        }
+
+        console.log('Structured data sent successfully');
+
+        const structuredData = await structuredResponse.json();
+        console.log('Structured Data:', structuredData);
+    } catch (error) {
+        console.error('Error sending structured data:', error);
+    }
+}
