@@ -7,6 +7,7 @@ Uses django's reverse relationship to link with AppointmentModel.
 """
 
 class DoctorModel(models.Model):
+  photo = models.ImageField(upload_to='doctors/', default='doctors/default.jpg')
   name = models.CharField(max_length=100, unique=True)
   specialization = models.CharField(max_length=100)
   education = models.TextField()

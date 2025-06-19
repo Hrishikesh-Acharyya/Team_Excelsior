@@ -29,3 +29,5 @@ django-cors-headers
 #twilio for SMS and votp verification
 twilio
 
+# for parsing dates from text
+dateparser  

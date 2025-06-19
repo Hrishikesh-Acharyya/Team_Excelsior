@@ -13,17 +13,23 @@
   <h1>🎤 Voice Appointment Bot</h1>
 
   <div class="info-box" id="user-data">
-    <strong>Collected Data:</strong><br>
-    Name: <span id="name"></span><br>
-    Age: <span id="age"></span><br>
-    Gender: <span id="gender"></span><br>
-    Phone: <span id="phone"></span><br>
-    Symptoms: <span id="symptoms"></span><br>
-    Email: <span id="email"></span><br>
+    <form>
+    {% csrf_token %}
+    <div id = "heading">
+    <strong>Collected Data:</strong><br><br>
+    </div>
+    <strong><span style="font-size: 1.25em">Name: <span id="name"></span></span></strong><br><br>
+    <strong><span style="font-size: 1.25em">Age: <span id="age"></span></span></strong><br><br>
+    <strong><span style="font-size: 1.25em">Gender: <span id="gender"></span></span></strong><br><br>
+    <strong><span style="font-size: 1.25em">Phone: <span id="phone"></span></span></strong><br><br>
+    <strong><span style="font-size: 1.25em">Symptoms: <span id="symptoms"></span></span></strong><br><br>
+    <strong><span style="font-size: 1.25em">Email: <span id="email"></span></span></strong><br><br>
+    </form>
   </div>
 
   <div id="transcription" class="info-box">Click "Start Talking" to begin.</div>
   <button id="toggle-mic-button">Start Talking</button>
+  <button id="submit">Submit</button>
 
   <script src="{% static 'record.js' %}"></script>
 
