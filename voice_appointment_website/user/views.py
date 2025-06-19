@@ -52,8 +52,8 @@ class registerUserForm(View):
           messages.error(request, str(e))
         return render(request, 'register.html')
 
-class loginUser:
-    # Placeholder for the login user view
-    pass
-
-# Create your views here.
+def loginUser(request):
+    if request.method == "GET":
+        return render(request, "login.html")
+    # Add POST logic here if needed
+    return render(request, "login.html")  # Always return a response
