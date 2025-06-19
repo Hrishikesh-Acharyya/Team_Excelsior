@@ -94,7 +94,7 @@ async function Toggle() {
         toggleMicButton.textContent = "Start Talking";
         mediaRecorder.stop();
 
-    }, defaultRecordingTime); // Record for 30 seconds, adjust as needed
+    }, defaultRecordingTime); // Record for 2 minutes, adjust as needed
 }
 };
 
@@ -146,13 +146,17 @@ function showTranscription(data,is_empty) {
 
     if( is_empty) {
         transcriptionContainer.innerHTML =
-            `<p id = "prev-transcript"> Transcription: Sorry!! Did not quite get that</p>
-             <p> Press the button to record again</p>`;
+            `<div>
+                <p id="prev-transcript">Transcription: Sorry!! Did not quite get that</p>
+                <p>Press the button to record again</p>
+            </div>`;
     } else {
         transcriptionContainer.innerHTML =
-            `<p id = "prev-transcript"> Transcription: ${data.transcription}</p>
-             <p> Press the button to record again</p>`;
-              structureData(data)
+            `<div>
+                <p id="prev-transcript">Transcription: ${data.transcription}</p>
+                <p>Press the button to record again or edit any field </p>
+            </div>`;
+        structureData(data)
     }
 
    
@@ -182,7 +186,8 @@ async function structureData(data) {
 
         const structuredData = await structuredResponse.json();
         console.log('Structured Data:', structuredData);
-
+        console.log("displayStructuredData called")
+        
         displayStructuredData(structuredData);
     } catch (error) {
         console.error('Error sending structured data:', error);
@@ -190,11 +195,18 @@ async function structureData(data) {
 }
 
 function displayStructuredData(structuredData) {
-
-    nameField.textContent = structuredData.name || nameField.textContent || '';
-    ageField.textContent = structuredData.age || ageField.textContent || '';
-    genderField.textContent = structuredData.gender || genderField.textContent || '';
-    phoneField.textContent = structuredData.phone || phoneField.textContent || '';
-    symptomsField.textContent = structuredData.symptoms || symptomsField.textContent || '';
-    emailField.textContent = structuredData.email || emailField.textContent || '';
+    if (structuredData.name !== null && structuredData.name !== undefined) nameField.value = structuredData.name;
+    if (structuredData.age !== null && structuredData.age !== undefined) ageField.value = structuredData.age;
+    if (structuredData.gender !== null && structuredData.gender !== undefined) genderField.value = structuredData.gender;
+    if (structuredData.phone !== null && structuredData.phone !== undefined) phoneField.value = structuredData.phone;
+    if (structuredData.symptoms !== null && structuredData.symptoms !== undefined) symptomsField.value = structuredData.symptoms;
+    if (structuredData.email !== null && structuredData.email !== undefined) emailField.value = structuredData.email;
 }
+
+// document.addEventListener("DOMContentLoaded", () => {
+//     if (isLoggedIn) {
+//         // Disable fields that should come from user info
+//         //nameField.readOnly = true;
+//         phoneField.readOnly = true;
+//     }
+// });

@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from .whisper_model import model # Import the whisper module from the same package
 
 load_dotenv()
+is_authenticated  = False
 class AudioTranscriptionAPIView(APIView):
 
     """
@@ -86,15 +87,14 @@ class StructureDataAPIView(APIView):
         if not transcription:
             return Response({"error": "No transcription provided."}, status=status.HTTP_400_BAD_REQUEST)
 
-        structured_data = self.call_llm(transcription)
-        if isinstance(structured_data, Response): # if the call_llm function returns a Response object which it does in case of error , return it directly
+        structured_data = self.call_llm(transcription, request)
+        if isinstance(structured_data, Response):
             return structured_data
         return Response(structured_data, status=status.HTTP_200_OK)
-    
-    def call_llm(self, transcription):
-        """
-        Call the Together.ai Llama API to structure the data.
-        """
+
+    def call_llm(self, transcription, request, *args, **kwargs):
+        is_authenticated = request.user.is_authenticated
+
         api_key = os.getenv("TOGETHER_AI_API_KEY")
         endpoint = os.getenv("TOGETHER_AI_API_URL")
 
@@ -103,7 +103,28 @@ class StructureDataAPIView(APIView):
             "Content-Type": "application/json"
         }
 
+        # Optionally, get user info if authenticated
+        user_info = None
+        if is_authenticated:
+            user_info = {
+                "name": getattr(request.user, "full_name", None),
+                "phone": getattr(request.user, "phone_number", None),
+                "email": getattr(request.user, "email", None),
+            }
+            auth_instruction = (
+                f'The user is authenticated. '
+                f'For "name", "email", and "phone", use the following values unless the user spells out a new value in the transcription: '
+                f'name="{user_info["name"]}", email="{user_info["email"]}", phone="{user_info["phone"]}". '
+                f'Proceed as normal for other fields.'
+            )
+        else:
+            auth_instruction = (
+                'The user is not authenticated. Extract all information from the transcription as normal.'
+            )
+
         prompt = f"""
+        {auth_instruction}
+
         You are an intelligent assistant at a well known hospital that extracts structured data from voice-to-text medical appointment requests.
         Be smart. Since the transcription is from a voice message, it may contain incomplete or unclear information. If you can smartly infer the missing information, do so.
         If you cannot infer the missing information, set it to null.
@@ -123,7 +144,6 @@ class StructureDataAPIView(APIView):
         - "doctor": Name  of the doctor (if mentioned, otherwise null),
         - "specialization": Specialization of the doctor (if mentioned, otherwise null),
         - "datetime": Appointment date and time in ISO 8601 format (e.g., "2025-06-18T14:00:00"). If they say X days from now, calculate the date and time accordingly. If not mentioned, set it to null.
-        
 
         Do not include any explanation or commentary. Only respond with the JSON object.
 
@@ -131,18 +151,17 @@ class StructureDataAPIView(APIView):
         """
 
         body = {
-            "model": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",  # Specify the model you want to use
-            "messages":[
+            "model": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+            "messages": [
                 {"role": "system", "content": "You are an intelligent assistant at a well known hospital that extracts structured data from voice-to-text natural language medical appointment requests."},
                 {"role": "user", "content": prompt}
             ],
-            "temperature": 0.4  # Adjust as needed
+            "temperature": 0.4
         }
 
-        try: 
+        try:
             response = requests.post(endpoint, headers=headers, data=json.dumps(body))
             response.raise_for_status()
-
             content = response.json()['choices'][0]['message']['content']
             return json.loads(content)
         except requests.exceptions.RequestException as e:
