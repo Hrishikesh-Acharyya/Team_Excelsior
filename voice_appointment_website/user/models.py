@@ -19,9 +19,7 @@ class CustomUserManager(BaseUserManager):
     """
     pattern = r'^(\+91[\-\s]?)?[6-9]\d{9}$'
     if not re.match(pattern, phone_number):
-        raise ValidationError("Invalid phone number format. It should be a 10-digit Indian mobile number, optionally prefixed with +91."
-
-)
+        raise ValidationError("Invalid phone number format. It should be a 10-digit Indian mobile number, optionally prefixed with +91.")
 
   def create_user(self, phone_number, full_name, email = None, **extra_fields):
     """
@@ -57,7 +55,7 @@ class CustomUserManager(BaseUserManager):
   def create_superuser(self,full_name,phone_number,email, password,**extra_fields):
     """
     Creates and returns a superuser with an phone,email and other fields.
-    """
+    """ 
     extra_fields.setdefault('is_staff', True)
     extra_fields.setdefault('is_superuser', True)
     if not password:
