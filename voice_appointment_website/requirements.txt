@@ -2,6 +2,8 @@
 # Requires Python >= 3.11, < 3.12(No whisper support above 3.12)
 # Recommended: Python 3.11.12
 # Django core
+#if you are using sqlite not postgresql, in settings change DATABASES['default']['ENGINE'] to 'django.db.backends.sqlite3' and remove the postgres parts. Use copilot for guidance
+#Make sure your python is included in path
 Django
 djangorestframework
 python-dotenv

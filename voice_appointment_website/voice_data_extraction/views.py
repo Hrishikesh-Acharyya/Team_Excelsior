@@ -10,6 +10,7 @@ import os
 import json
 import requests
 from dotenv import load_dotenv
+from .whisper_model import model # Import the whisper module from the same package
 
 load_dotenv()
 class AudioTranscriptionAPIView(APIView):
@@ -57,14 +58,8 @@ class AudioTranscriptionAPIView(APIView):
                 temp_output_audio_path
             ], check = True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Suppress ffmpeg output
 
-        
-
-
-            # Load the Whisper model
-            WhisperModel = whisper.load_model("base")  # You can change the model size as needed
-            
             # Transcribe the audio file
-            result = WhisperModel.transcribe(temp_output_audio_path) # result is a dictionary containing the transcription and other metadata
+            result = model.transcribe(temp_output_audio_path) # result is a dictionary containing the transcription and other metadata
 
             # Return the transcription result
             return Response({"transcription": result['text']}, status=status.HTTP_200_OK)
