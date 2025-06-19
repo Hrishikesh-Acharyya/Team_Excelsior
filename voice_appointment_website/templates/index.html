@@ -6,6 +6,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Medical Appointment System</title>
   <link rel="stylesheet" href = "{% static 'index.css' %}" />
+  <style>
+    @media (max-width: 700px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+      }
+      nav {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .logo-section {
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      width: 100%;
+      box-sizing: border-box;
+      overflow-x: auto; /* Allows scrolling if content overflows */
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;      /* Allows links to wrap to next line */
+      gap: 1.5rem;
+      min-width: 0;         /* Allows nav to shrink inside flex parent */
+      max-width: 100%;      /* Prevents nav from exceeding container */
+      box-sizing: border-box;
+      overflow-x: auto;     /* Allows horizontal scroll if needed */
+    }
+
+    nav a {
+      white-space: nowrap;  /* Prevents link text from breaking */
+      text-overflow: ellipsis;
+      overflow: hidden;
+      min-width: 0;
+    }
+  </style>
 </head>
 <body>
 
@@ -19,8 +65,7 @@
       <a href="#about">About</a>
       <a href="specialists.html">Specialists</a>
       <a href="#support">Support</a>
-      <a href="#career">Career</a>
-      <a href="#help">Help</a>
+      <a href="{% url 'register_user_form' %}">Login/Signup</a>
     </nav>
   </header>
 

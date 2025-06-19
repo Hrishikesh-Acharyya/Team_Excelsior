@@ -1,5 +1,4 @@
-
-    body {
+body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f0f4f8;
@@ -19,6 +18,12 @@
       width: 100%;
       top: 0;
       z-index: 999;
+      box-sizing: border-box; /* Add this */
+      overflow-x: auto; /* Allows scrolling if content overflows */
+    }
+
+    nav, header {
+      overflow-x: auto;
     }
 
     .logo-section {
@@ -37,12 +42,28 @@
       color: white;
     }
 
+    nav {
+      display: flex;
+      flex-wrap: wrap; /* Already present */
+      justify-content: flex-end;
+      align-items: center;
+      gap: 1.5rem;
+      min-width: 0; /* Add this to allow shrinking */
+      box-sizing: border-box; /* Add this */
+      max-width: 100%; /* Add this */
+      overflow-x: auto;     /* Allows horizontal scroll if needed */
+    }
+
     nav a {
       color: white;
       text-decoration: none;
       margin-left: 1.5rem;
       font-size: 1rem;
       transition: color 0.3s;
+      white-space: nowrap;  /* Prevents link text from breaking */
+      text-overflow: ellipsis;
+      overflow: hidden;
+      min-width: 0;
     }
 
     nav a:hover {
@@ -171,4 +192,37 @@
       text-align: center;
       padding: 1rem;
       margin-top: 2rem;
+    }
+
+    /* Responsive header and nav moved from index.html */
+@media (max-width: 700px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+  nav {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .logo-section {
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 500px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+      }
+      nav a {
+        margin-left: 0;
+        margin-bottom: 0.5rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
     }
