@@ -14,12 +14,19 @@
     <h2>New User Sign Up</h2>
 
     {% if messages %}
-        <ul class="messages">
+        <ul class="messages" id = "django-messages">
           {% for message in messages %}
             <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
           {% endfor %}
         </ul>
     {% endif %}
+
+    <script>
+    setTimeout(function() {
+      var msg = document.getElementById('django-messages');
+      if (msg) { msg.style.display = 'none'; }
+    }, 3000); // 3000 ms = 3 seconds
+  </script>
 
 
     <form id="signupForm" method="post" action="{% url 'register_user_form' %}">

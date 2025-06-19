@@ -132,8 +132,7 @@ def verify_otp_view(request):
 
 
 def logout_view(request):
-    # Consume all messages so none are shown on this page
-    list(messages.get_messages(request))
+    
     logout(request)
     messages.success(request, "Logged out successfully.")
     return redirect('index')  # or wherever you want to redirect after logout
