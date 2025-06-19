@@ -10,7 +10,7 @@ and the assumption that patient info can be derived from the LLM structure data 
 Linked with Doctor model so the doctor dashboard if created can utilise this model to show appointments.
 """
 class AppointmentModel(models.Model):
-    doctor = models.ForeignKey(DoctorModel, on_delete=models.SET_NULL)
+    doctor = models.ForeignKey(DoctorModel, on_delete=models.CASCADE)
     appointment_time = models.DateTimeField()
 
     # Patient Info (from LLM structure data or User)

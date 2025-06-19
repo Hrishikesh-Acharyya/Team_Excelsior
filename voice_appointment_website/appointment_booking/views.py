@@ -28,7 +28,7 @@ class AppointmentCreateView(FormView):
     template_name = 'appointment.html'  
     form_class = AppointmentForm
     success_url = reverse_lazy('success')  #success URL after appointment creation
-
+    
     def form_valid(self, form):
         appointment_time = form.cleaned_data['appointment_time']
         doctor = form.cleaned_data['doctor']
