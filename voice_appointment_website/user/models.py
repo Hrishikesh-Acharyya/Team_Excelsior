@@ -17,7 +17,7 @@ class CustomUserManager(BaseUserManager):
     \d{9} - followed by 9 digits (total 10 digits)
     $ - end of string
     """
-    pattern = r'^(\+91[\-\s]?)?[6-9]\d{9}$'
+    pattern = r'^([6-9]\d{9}$'
     if not re.match(pattern, phone_number):
         raise ValidationError("Invalid phone number format. It should be a 10-digit Indian mobile number, optionally prefixed with +91.")
 
@@ -82,12 +82,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     Email is optional and can be left blank but should be unique if provided.
     The model also includes fields for staff status, superuser status, and active status.
     """
-    email = models.EmailField(unique=True, blank=True, null=True)  # Optional email field
+    email = models.EmailField(blank=True, null=True)  # Optional email field
     phone_number = models.CharField(max_length=15, unique=True, blank = False)  # Unique phone number field
     full_name = models.CharField(max_length=255)  # Full name field
     is_staff = models.BooleanField(default=False)  # Staff status
     is_superuser = models.BooleanField(default=False)  # Superuser status
     is_active = models.BooleanField(default=True)  # Active status
+    otp = models.CharField(max_length=6, blank=True, null=True)  # OTP field for login verification
 
 
     USERNAME_FIELD = 'phone_number'  # Use phone number as the unique identifier

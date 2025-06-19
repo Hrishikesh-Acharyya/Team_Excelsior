@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Appointment Form with Slideshow & Video</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .main-container {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+    }
+
+    /* LEFT SIDE SLIDESHOW */
+    .left-side {
+      width: 60%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slideshow {
+      height: 100%;
+      width: 100%;
+      position: relative;
+    }
+
+    .slide-image {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    .slide-image.active {
+      opacity: 1;
+    }
+
+    /* RIGHT SIDE VIDEO FORM */
+    .right-side {
+      width: 40%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-wrapper {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .form-wrapper video.form-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.5; /* Increased visibility */
+    }
+
+    form {
+      position: relative;
+      z-index: 1;
+      width: 90%;
+      max-width: 450px;
+      background: rgba(255, 255, 255, 0.8); /* More transparent */
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px); /* Optional: Glass effect */
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #2a2a2a;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      color: #333;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .field-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .mic-btn {
+      background: #007bff;
+      border: none;
+      padding: 0.4rem 0.6rem;
+      margin-left: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mic-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+    }
+
+    button[type="submit"] {
+      background-color: #28a745;
+      color: white;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    @media screen and (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+
+      .left-side, .right-side {
+        width: 100%;
+        height: 50vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-container">
+
+  <!-- LEFT SIDE SLIDESHOW -->
+  <div class="left-side">
+    <div class="slideshow">
+      <img src="doctor-patient-are-discussing-something.jpg" class="slide-image active" alt="Slide 1">
+      <img src="diagnose-doctor-medicine-health-wellness-concept_53876-124256.avif" class="slide-image" alt="Slide 2">
+      <img src="heart-healthy-life-wellness-icon_53876-123819.avif" class="slide-image" alt="Slide 3">
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE FORM WITH VIDEO BACKGROUND -->
+  <div class="right-side">
+    <div class="form-wrapper">
+
+      <!-- VIDEO BACKGROUND INSIDE FORM -->
+      <video autoplay muted loop playsinline class="form-video">
+        <source src="6913706_Motion_Graphics_Motion_Graphic_1080x1920.mp4" type="video/mp4">
+      </video>
+
+      <!-- FORM -->
+      <form id="appointmentForm">
+        <h2>Book an Appointment</h2>
+<video autoplay muted loop playsinline class="form-video">
+        <source src="6913706_Motion_Graphics_Motion_Graphic_1080x1920.mp4" type="video/mp4">
+      </video>
+        <!-- Name -->
+        <label for="name">Name</label>
+        <div class="field-container">
+          <input type="text" id="name" name="name" required>
+          <button type="button" class="mic-btn" onclick="startSpeech('name')" title="Speak">
+            <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM11 19h2v2h-2z"/></svg>
+          </button>
+        </div>
+
+        <!-- Age -->
+        <label for="age">Age</label>
+        <div class="field-container">
+          <input type="number" id="age" name="age" required>
+          <button type="button" class="mic-btn" onclick="startSpeech('age')" title="Speak">
+            <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM11 19h2v2h-2z"/></svg>
+          </button>
+        </div>
+
+        <!-- Gender -->
+        <label for="gender">Gender</label>
+        <div class="field-container">
+          <input type="text" id="gender" name="gender">
+          <button type="button" class="mic-btn" onclick="startSpeech('gender')" title="Speak">
+            <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM11 19h2v2h-2z"/></svg>
+          </button>
+        </div>
+
+        <!-- Phone -->
+        <label for="phone">Phone Number</label>
+        <div class="field-container">
+          <input type="tel" id="phone" name="phone">
+          <button type="button" class="mic-btn" onclick="startSpeech('phone')" title="Speak">
+            <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM11 19h2v2h-2z"/></svg>
+          </button>
+        </div>
+
+        <!-- Symptoms -->
+        <label for="symptoms">Describe Medical Problem</label>
+        <div class="field-container">
+          <textarea id="symptoms" name="symptoms" rows="4"></textarea>
+          <button type="button" class="mic-btn" onclick="startSpeech('symptoms')" title="Speak">
+            <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM11 19h2v2h-2z"/></svg>
+          </button>
+        </div>
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 🎙️ Speech Recognition & Slideshow Script -->
+<script>
+  function startSpeech(fieldId) {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert("Speech recognition not supported in your browser.");
+      return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.start();
+
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript;
+      const field = document.getElementById(fieldId);
+      if (field.tagName === 'TEXTAREA') {
+        field.value += (field.value ? " " : "") + transcript;
+      } else {
+        field.value = transcript;
+      }
+    };
+
+    recognition.onerror = function(event) {
+      alert("Speech recognition error: " + event.error);
+    };
+  }
+
+  // ⏳ Image slideshow transition
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide-image');
+  setInterval(() => {
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add('active');
+  }, 5000);
+</script>
+
+</body>
+</html>

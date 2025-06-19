@@ -13,7 +13,9 @@
   <div class="otp-container">
     <h2>Verify OTP</h2>
     <p style="text-align:center;">Enter the OTP sent to your phone</p>
-    <form action="verify-otp-process.php" method="POST">
+    <form action={% url 'verify_user' %} method="POST">
+      {% csrf_token%}
+      <input type="hidden" name="phone_number" value="{{ phone_number }}">
       <input type="text" name="otp" placeholder="Enter OTP" maxlength="6" required />
       <button type="submit">Verify</button>
     </form>

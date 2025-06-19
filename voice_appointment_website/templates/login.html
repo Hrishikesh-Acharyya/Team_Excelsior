@@ -11,10 +11,21 @@
 <body>
 
   <div class="login-container">
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+
     <h2>Login</h2>
     <form action={% url 'login_user' %} method="POST">
-      <input type="text" name="Full name" placeholder="Full Name" required />
-      <input type="tel" name="mobile" placeholder="Mobile Number" required />
+      {%csrf_token%}
+      <input type="text" name="full_name" placeholder="Full Name" required />
+      <input type="tel" name="phone_number" placeholder="Mobile Number" required />
       <button type="submit">Get OTP</button>
     </form>
     <div class="new-user">
