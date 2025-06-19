@@ -44,3 +44,63 @@ This makes it easier to manage appointment state later in admin panel or user da
 Instead of available_slots = JSONField(...), define:
 
 no slot overlapping. give 10 - 10 min slots fixed
+
+✅ Yes: The Appointment model should be linked to the PatientProfile model — not directly to the User model — because:
+A single user (e.g. father) can book for multiple patients (e.g. son, daughter, self)
+
+The patient's medical info (age, gender, name) is stored in the PatientProfile
+
+This avoids duplication and keeps the data clean and normalized
+
+✅ Clean Relationship:
+scss
+Copy
+Edit
+User (e.g. Father) ──┬─────────────▶ PatientProfile (e.g. Son)
+                    └─────────────▶ PatientProfile (e.g. Self)
+                                       │
+                                       ▼
+                               Appointment
+✅ So your Appointment model should look like this:
+python
+Copy
+Edit
+class Appointment(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE)
+    appointment_datetime = models.DateTimeField()
+    symptoms = models.TextField()
+    status = models.CharField(
+        max_length=20,
+        choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')],
+        default='pending'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Appointment for {self.patient.full_name} with {self.doctor.name}"
+✅ Why This Is Good:
+Field	Source
+patient.full_name	From PatientProfile
+patient.age, gender, relation	From PatientProfile
+user.phone_number	From the parent User
+doctor.availability	From the Doctor model
+
+So everything stays nicely separated and connected.
+
+✅ Optional: If You Still Want a Link to User
+You can still include the user who booked it:
+
+python
+Copy
+Edit
+user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+This way:
+
+You know who booked the appointment
+
+You still keep patient data separate
+
+Works even if the patient is different from the user
+
+Let me know if you'd like help defining the full PatientProfile, Appointment, and Doctor models together — or if you're ready to move on to serializers and views.

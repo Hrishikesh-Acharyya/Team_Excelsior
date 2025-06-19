@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractUser, AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 import re
@@ -51,8 +51,8 @@ class CustomUserManager(BaseUserManager):
     user.save()
     return user
 
-# Create your models here.
-  def create_superuser(self,full_name,phone_number,email, password,**extra_fields):
+
+  def create_superuser(self,full_name,phone_number, password,email = None, **extra_fields):
     """
     Creates and returns a superuser with an phone,email and other fields.
     """ 
@@ -73,3 +73,27 @@ class CustomUserManager(BaseUserManager):
     
     return superUser
 
+class User(AbstractBaseUser, PermissionsMixin):
+    """
+    Custom user model that uses phone number as the unique identifier.
+    No need to declare password field as it is inherited from AbstractBaseUser.
+    The phone number is used as the username field.
+    full name is a required field.
+    Email is optional and can be left blank but should be unique if provided.
+    The model also includes fields for staff status, superuser status, and active status.
+    """
+    email = models.EmailField(unique=True, blank=True, null=True)  # Optional email field
+    phone_number = models.CharField(max_length=15, unique=True, blank = False)  # Unique phone number field
+    full_name = models.CharField(max_length=255)  # Full name field
+    is_staff = models.BooleanField(default=False)  # Staff status
+    is_superuser = models.BooleanField(default=False)  # Superuser status
+    is_active = models.BooleanField(default=True)  # Active status
+
+
+    USERNAME_FIELD = 'phone_number'  # Use phone number as the unique identifier
+    REQUIRED_FIELDS = ['full_name']  # Required fields for creating a user
+
+    objects = CustomUserManager()  # Use the custom user manager
+
+    def __str__(self):
+        return self.full_name
