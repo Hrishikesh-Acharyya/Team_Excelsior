@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Verification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .otp-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    input[type="text"] {
+      padding: 0.8rem;
+      width: 80%;
+      margin: 1rem 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      text-align: center;
+    }
+    button {
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+      margin: 0.5rem;
+    }
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+    #timer {
+      margin-top: 0.5rem;
+      color: #555;
+    }
+    .resend-button {
+      background-color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <div class="otp-container">
+    <h2>OTP Verification</h2>
+    <p>An OTP has been sent to your <strong>mobile number</strong>.</p>
+
+    <input type="text" id="otpInput" maxlength="6" placeholder="Enter 6-digit OTP">
+    <br>
+    <button onclick="verifyOTP()">Verify</button>
+
+    <div>
+      <button id="resendBtn" class="resend-button" onclick="resendOTP()" disabled>Resend OTP</button>
+      <div id="timer">You can resend OTP in <span id="countdown">30</span> seconds</div>
+    </div>
+  </div>
+
+  <script>
+    // Auto countdown for resend OTP
+    let countdownValue = 30;
+    let timerInterval;
+
+    function startCountdown() {
+      const countdownDisplay = document.getElementById("countdown");
+      const resendBtn = document.getElementById("resendBtn");
+      resendBtn.disabled = true;
+      countdownDisplay.textContent = countdownValue;
+
+      timerInterval = setInterval(() => {
+        countdownValue--;
+        countdownDisplay.textContent = countdownValue;
+
+        if (countdownValue === 0) {
+          clearInterval(timerInterval);
+          resendBtn.disabled = false;
+          document.getElementById("timer").textContent = "You can now resend OTP";
+        }
+      }, 1000);
+    }
+
+    function verifyOTP() {
+      const otp = document.getElementById('otpInput').value.trim();
+      if (/^\d{6}$/.test(otp)) {
+        if (otp === "123456") {
+          alert("OTP Verified Successfully!");
+          window.location.href = "confirmation.html";
+        } else {
+          alert("Invalid OTP. Please try again.");
+        }
+      } else {
+        alert("Please enter a valid 6-digit OTP.");
+      }
+    }
+
+    function resendOTP() {
+      alert("A new OTP has been sent to your mobile number.");
+      countdownValue = 30;
+      startCountdown();
+    }
+
+    // Start countdown initially
+    window.onload = startCountdown;
+  </script>
+</body>
+</html>

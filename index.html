@@ -17,7 +17,6 @@
       background-color: #2c3e50;
       color: white;
       display: flex;
-      justify-content: space-between;
       align-items: center;
       padding: 1rem 2rem;
       flex-wrap: wrap;
@@ -25,6 +24,9 @@
       width: 100%;
       top: 0;
       z-index: 999;
+      justify-content: flex-start; 
+      gap: 27rem;
+
     }
 
     .logo-section {
@@ -43,16 +45,24 @@
       color: white;
     }
 
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+
     nav a {
-      color: white;
+      font-weight: bold;
+      color: #1abc9c;
       text-decoration: none;
-      margin-left: 1.5rem;
       font-size: 1rem;
-      transition: color 0.3s;
+      transition: color 0.3s, text-decoration 0.3s;
     }
 
     nav a:hover {
-      color: #1abc9c;
+      color: #ffffff;
+      text-decoration: underline;
     }
 
     .hero {
@@ -189,11 +199,12 @@
       <div id="liveClock"></div>
     </div>
     <nav>
+      <a href="login.html" class="login-button">Login</a>
       <a href="#about">About</a>
-      <a href="specialists.html">Specialists</a>
       <a href="#support">Support</a>
       <a href="#career">Career</a>
       <a href="#help">Help</a>
+      <a href="specialists.html">Specialists</a>
     </nav>
   </header>
 
