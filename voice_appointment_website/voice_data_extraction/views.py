@@ -12,13 +12,15 @@ import requests
 from dotenv import load_dotenv
 
 load_dotenv()
-"""
+class AudioTranscriptionAPIView(APIView):
+
+    """
     View to handle audio transcription requests.
     In Django REST Framework (DRF), parser classes are responsible for parsing the content of incoming HTTP requests into Python data types that your views can work with.
     MultiPartParser: Parses multipart form data (used for file uploads).
     The tempfile.NamedTemporaryFile function automatically creates a unique temporary file with a random name in the system’s temp directory.
 """
-class AudioTranscriptionAPIView(APIView):
+
 
     parser_classes = [MultiPartParser]
     
@@ -110,7 +112,7 @@ class StructureDataAPIView(APIView):
         You are an intelligent assistant at a well known hospital that extracts structured data from voice-to-text medical appointment requests.
         Be smart. Since the transcription is from a voice message, it may contain incomplete or unclear information. If you can smartly infer the missing information, do so.
         If you cannot infer the missing information, set it to null.
-        ⚠️ If the user spells out their name or email using letters (e.g., H-A-R-R-Y), always prefer the spelled version over any earlier guess. Remove the hyphens and spaces from the spelled version to get the final name or email.
+        If the user spells out their name or email using letters (e.g., H-A-R-R-Y), always prefer the spelled version over any earlier guess. Remove the hyphens and spaces from the spelled version to get the final name or email.
 
         Given the following user message:
         \"\"\"{transcription}\"\"\"
