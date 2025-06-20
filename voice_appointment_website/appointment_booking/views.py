@@ -2,10 +2,15 @@ from django.shortcuts import render
 from django.conf import settings
 from django.urls import reverse_lazy
 from datetime import timedelta
+from datetime import datetime
 from django.contrib import messages
 from .models import AppointmentModel
 from .forms import AppointmentForm
 from django.views.generic.edit import FormView
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from doctor.models import DoctorModel
+from appointment_booking.utils import generate_time_slots
 
 
 def index(request):
@@ -18,7 +23,8 @@ def book_appointment(request):
     """
     Render the appointment booking page.
     """
-    return render(request, 'appointment.html', {'HOST_NAME': settings.HOST_NAME})
+    doctors = DoctorModel.objects.all()
+    return render(request, 'appointment.html', {'doctors': doctors, 'HOST_NAME': settings.HOST_NAME})
 
 class AppointmentCreateView(FormView):
     """

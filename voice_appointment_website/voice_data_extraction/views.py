@@ -9,8 +9,15 @@ import subprocess
 import os
 import json
 import requests
+import datetime
 from dotenv import load_dotenv
 from .whisper_model import model # Import the whisper module from the same package
+from rest_framework.decorators import api_view
+from django.http import JsonResponse
+from doctor.models import DoctorModel  # Import DoctorModel for use in validate_slot
+from .utils import find_nearest_available_slot  # Import the utility function for slot validation
+from .utils import get_available_slots  # Import the utility function for getting available slots
+
 
 load_dotenv()
 is_authenticated  = False
@@ -142,7 +149,7 @@ class StructureDataAPIView(APIView):
         - "phone": Phone number of the patient (if mentioned, otherwise null),
         - "email": Email address of the patient (if mentioned, otherwise null), infer the email from the context. Usually emails are name/surname@domain.com. Infer the domain properly. Consider only well known domains like gmail.com, yahoo.com, outlook.com etc. If not mentioned, set it to null.
         - "doctor": Name  of the doctor (if mentioned, otherwise null),
-        - "specialization": Specialization of the doctor (if mentioned, otherwise null),
+        - "specialization": Specialization of the doctor (if mentioned, otherwise from the symptoms,age,gender provided,infer the specialization),
         - "datetime": Appointment date and time in ISO 8601 format (e.g., "2025-06-18T14:00:00"). If they say X days from now, calculate the date and time accordingly. If not mentioned, set it to null.
 
         Do not include any explanation or commentary. Only respond with the JSON object.
@@ -167,3 +174,30 @@ class StructureDataAPIView(APIView):
         except requests.exceptions.RequestException as e:
             print(f"Error calling Together.ai API: {e}")
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+@api_view(['POST'])
+def validate_slot(request):
+    data = request.data
+    result = find_nearest_available_slot(data)
+    return Response(result)
+
+@api_view(['POST'])
+def available_slots(request):
+    doctor_id = request.data.get('doctorId')
+    date = request.data.get('date')
+    
+    try:
+        doctor = DoctorModel.objects.get(id=doctor_id)
+    except DoctorModel.DoesNotExist:
+        return Response({'error': 'Doctor not found'}, status=404)
+    try:
+        date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+    except Exception:
+        return Response({'error': 'Invalid date format. Use YYYY-MM-DD'}, status=400)
+
+    available_slots = get_available_slots(doctor, date_obj)
+
+    return Response({
+        'available_slots': [slot.strftime("%Y-%m-%d %H:%M") for slot in available_slots]
+    })
