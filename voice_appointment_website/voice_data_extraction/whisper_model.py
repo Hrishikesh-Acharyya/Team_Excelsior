@@ -8,4 +8,4 @@ which is more efficient than loading it for every request.
 
 import whisper
 
-model = whisper.load_model("base") # tiny, base, small, medium, large
+model = whisper.load_model("tiny") # tiny, base, small, medium, large
