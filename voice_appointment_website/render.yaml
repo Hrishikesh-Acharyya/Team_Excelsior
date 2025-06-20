@@ -3,7 +3,7 @@ services:
     name: voice_appointment_website
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn voice_appointment_website.voice_appointment_website.wsgi:application
+    startCommand: gunicorn voice_appointment_website.wsgi:application
     envVars:
       - key: DJANGO_SECRET_KEY
         value: 25&gr==tl)lx*5-m7@7ed$gc9u_5r3mc)4)bh!dwh7vpu#mgs5
