@@ -20,7 +20,6 @@ class AppointmentModel(models.Model):
     age = models.PositiveIntegerField(null=True, blank=True)
     gender = models.CharField(
         max_length=10,
-        choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')],
         null=True, blank=True
     )
 

@@ -125,3 +125,43 @@ document.addEventListener('DOMContentLoaded', function () {
     doctorSelect.addEventListener('change', updateTimeSlots);
     dateInput.addEventListener('change', updateTimeSlots);
 });
+
+document.getElementById('submit-button').addEventListener('click', async function () {
+    const formData = {
+        doctorId: document.getElementById('doctor').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        name: document.getElementById('name').value,
+        age: document.getElementById('age').value,
+        gender: document.getElementById('gender').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        symptoms: document.getElementById('symptoms').value,
+    };
+
+    try {
+        const response = await fetch(`${HOST_NAME}/create_appointment/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert("✅ Appointment booked successfully!");
+            window.location.href = "/";  // redirect to index
+        } else {
+            alert("❌ " + (result.error || "Failed to book appointment"));
+        }
+    } catch (err) {
+        console.error("Submission failed:", err);
+        alert("❌ Error occurred while booking appointment.");
+    }
+});
+
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}

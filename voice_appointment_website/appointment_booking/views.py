@@ -9,8 +9,11 @@ from .forms import AppointmentForm
 from django.views.generic.edit import FormView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.views import APIView
 from doctor.models import DoctorModel
 from appointment_booking.utils import generate_time_slots
+from django.contrib.auth import get_user_model
 
 
 def index(request):
@@ -62,3 +65,41 @@ class AppointmentCreateView(FormView):
         form.save()
         messages.success(self.request, "✅ Appointment booked successfully!")
         return super().form_valid(form)
+
+User = get_user_model()
+
+class CreateAppointmentView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def post(self, request):
+        try:
+            data = request.data
+            doctor_id = data.get('doctorId')
+            date_str = data.get('date')  # YYYY-MM-DD
+            time_str = data.get('time')  # HH:MM
+
+            if not all([doctor_id, date_str, time_str]):
+                return Response({'error': 'Missing required fields'}, status=400)
+
+            try:
+                doctor = DoctorModel.objects.get(id=doctor_id)
+            except DoctorModel.DoesNotExist:
+                return Response({'error': 'Doctor not found'}, status=404)
+
+            appointment_time = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+
+            appointment = AppointmentModel.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                doctor=doctor,
+                appointment_time=appointment_time,
+                full_name=data.get('name'),
+                age=data.get('age'),
+                gender=data.get('gender'),
+                phone_number=data.get('phone'),
+                email=data.get('email'),
+                symptoms=data.get('symptoms'),
+            )
+
+            return Response({'success': 'Appointment created successfully'})
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
