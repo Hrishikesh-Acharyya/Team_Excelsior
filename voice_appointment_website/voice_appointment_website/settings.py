@@ -29,7 +29,10 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'team-excelsior-1.onrender.com']
-HOST_NAME = os.getenv('HOST_NAME')
+if DEBUG:
+    HOST_NAME = os.getenv('HOST_NAME', 'http://localhost:8000')
+else:
+    HOST_NAME = os.getenv('HOST_NAME', 'https://team-excelsior-1.onrender.com')
 
 
 # Application definition

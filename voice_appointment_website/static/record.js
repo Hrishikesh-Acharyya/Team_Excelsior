@@ -116,7 +116,7 @@ async function Toggle() {
 
 async function sendAudioToBackend(audioBlob)
 {
-    const audioFile = new File([audioBlob], 'recording.wav', { type: 'audio/wav' });
+    const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
     const formData = new FormData();
     formData.append('audio', audioFile); //Name of the field in the form data is 'audio'
 
